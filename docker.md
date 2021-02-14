@@ -70,7 +70,7 @@ docker run -it --name CONTAINER_NAME IMAGE bash
 ## 分步操作
 
 ```bash
-# 下载镜像
+# 下载镜像，latest版本
 docker pull ubuntu
 
 # 创建、首次启动容器，使用daemon模式。
@@ -86,8 +86,11 @@ docker container ls --all
 # or
 docker ps -a
 
-# 启动/停止/重启已有容器
-docker container start/stop/restart CONTAINER
+# 查看容器详细信息
+docker [container] inspect CONTAINER
+
+# 启动/停止/重启/强制停止已有容器
+docker container start/stop/restart/kill CONTAINER
 
 # 进入运行中的容器，并运行bash，退出不会停止容器
 docker exec -it CONTAINER bash

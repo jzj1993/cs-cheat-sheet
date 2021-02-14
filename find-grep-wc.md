@@ -82,6 +82,21 @@ echo "a b c\nd e f" | wc -w # 统计单词数，输出6
 
 
 
+## 应用：统计文件/文件夹数量
+
+```bash
+# 统计文件夹下文件数量
+ls -l | grep "^-" | wc -l
+
+# 统计文件夹下目录数量
+ls -l | grep "^ｄ" | wc -l
+
+# 统计文件夹下文件数量，含子文件夹
+ls -lR | grep "^-" | wc -l
+```
+
+
+
 ## 应用：统计代码行数
 
 https://www.paincker.com/shell-count-code-lines
