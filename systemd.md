@@ -46,13 +46,28 @@ systemctl list-units --state=running
 
 
 
-## 查看日志
+## 日志管理
 
 ```bash
-journalctl -u NAME -f
+# 查看日志
+# -u, --unit 服务名称
+# -f, --follow 自动刷新
+# -n, --lines 末尾行数
+journalctl -f -n 100 -u NAME
 
-# 日志文件位置
-cat /var/log/journal/NAME.service.log
+# 清理日志
+# https://unix.stackexchange.com/questions/139513/how-to-clear-journalctl
+# Retain only the past two days:
+journalctl --vacuum-time=2d
+# Retain only the past 500 MB:
+journalctl --vacuum-size=500M
+```
+
+
+
+```bash
+# tail直接看日志文件。具体取决于journalctl和配置文件。
+tail -f /var/log/journal/NAME.service.log
 ```
 
 
@@ -109,30 +124,13 @@ systemctl reset-failed
 ## Docker中替代方案
 
 Docker中不能使用systemd
-```
+
+```bash
 System has not been booted with systemd as init system (PID 1). Can't operate.
 Failed to connect to bus: Host is down
 ```
 
-By Design且不可修复
-https://stackoverflow.com/questions/39169403/systemd-and-systemctl-within-ubuntu-docker-images
-https://askubuntu.com/questions/813588/systemctl-failed-to-connect-to-bus-docker-ubuntu16-04-container
-
-网上的做法没有用： `docker run -it --name xxx --privileged=true ubuntu bash`
-
-替代方案
-https://unix.stackexchange.com/questions/187042/starting-services-without-systemd
-https://github.com/gdraheim/docker-systemctl-replacement
-
-脚本
-```bash
-apt install -y python3
-
-wget https://github.com/gdraheim/docker-systemctl-replacement/raw/master/files/docker/systemctl3.py -O /usr/bin/systemctl
-wget https://github.com/gdraheim/docker-systemctl-replacement/raw/master/files/docker/journalctl3.py -O /usr/bin/journalctl
-chmod +x /usr/bin/systemctl
-chmod +x /usr/bin/journalctl
-```
+详见 [docker.md](docker.md)
 
 
 

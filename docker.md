@@ -46,7 +46,7 @@ https://www.cnblogs.com/sparkdev/p/7598590.html
 
 
 
-## 容器的创建和运行
+## 基础操作：创建运行容器
 
 **注意：**
 
@@ -67,7 +67,7 @@ docker run -it --name CONTAINER_NAME IMAGE bash
 
 
 
-## 分步操作
+## 常用操作 pull/container/exec/attach
 
 ```bash
 # 下载镜像，latest版本
@@ -84,6 +84,8 @@ docker container create --name CONTAINER_NAME IMAGE
 
 # 查看创建的容器，--all参数包含未运行容器
 docker container ls --all
+# or
+docker container ls -a
 # or
 docker ps -a
 
@@ -102,32 +104,65 @@ docker attach CONTAINER
 
 
 
-## 批量操作
+## 文件管理
 
 ```bash
-# 停止所有正在运行的container
-docker container stop $(docker ps -q)
+# 容器和主机之间复制文件
+docker cp CONTAINER:/file/path/within/container /host/path/target
 ```
 
 
 
-## 常用参数
+## ps与批量操作
 
 ```bash
-# restart参数
-# 设置成unless-stopped,则docker启动时也会启动容器,除非手动停止了
-# set when run
+# 显示运行容器
+docker ps
+# 显示所有容器
+docker ps -a
+# 只显示id
+docker ps -q
+```
+
+
+
+```bash
+# 停止运行容器
+docker container stop $(docker ps -q)
+
+# 更新所有容器
+docker update --restart=unless-stopped $(docker ps -q -a)
+```
+
+
+
+## run和update参数
+
+run参数
+
+```bash
+# name
+docker run --name CONTAINER_NAME IMAGE
+
+# restart
+# always: 始终启动容器
+# unless-stopped: 除非手动停止，某则在出错终止/docker启动时启动容器
 docker run --restart=unless-stopped IMAGE
-# or update existing container
-docker update --restart=unless-stopped CONTAINER
 
 # 端口绑定
 docker run -p <host_port1>:<container_port1> -p <host_port2>:<container_port2> IMAGE
 ```
 
+参数更新
+
+```bash
+docker rename CONTAINER_NAME NEW_CONTAINER_NAME
+docker update --restart=unless-stopped CONTAINER
+```
 
 
-## 修改参数
+
+## 修改其他参数
 
 一些参数只能在create和run中设置，不能update，例如端口绑定。之后如需修改有两个办法：
 
@@ -169,7 +204,7 @@ docker logs CONTAINER -f -n 10
 
 
 
-## 镜像与commit
+## 使用commit创建镜像
 
 1. 对于运行中的容器，可以使用commit在其基础上创建镜像，也有备份容器的作用。
 2. 概念和git相似，镜像相当于commit，容器相当于在commit基础上加未提交的更改。
@@ -190,18 +225,18 @@ docker history IMAGE
 Dockerfile格式
 
 ```bash
-COPY hom*.txt /root/ # 复制文件到容器内，支持通配符
-
 FROM ubuntu # 指定镜像
+
+COPY hom*.txt /root/ # 复制文件到容器内，支持通配符
 
 # Build时运行命令。每个RUN会新建一个commit，所以尽量合并RUN命令
 RUN apt update \
 && apt install -y sudo vim curl \
 && apt clean
 
-# docker run [OPTIONS] IMAGE [COMMAND] [ARG...]
+# ENTRYPOINT和CMD由Dockerfile指定默认值，执行run时可覆盖
+# docker run --entrypoint ENTRYPOINT IMAGE CMD [ARG...]
 # 实际运行的是 ENTRYPOINT CMD
-# ENTRYPOINT由Dockerfile指定，CMD可以传值覆盖Dockerfile指定的默认值
 ENTRYPOINT ["nginx", "-c"]
 CMD ["/etc/nginx/nginx.conf"]
 
@@ -215,32 +250,42 @@ ENV NODE_VERSION 7.2.0 # 环境变量
 docker build -t IMAGE_NAME .
 ```
 
-### 保持灵活性
+CMD和ENTRYPOINT区别  https://ithelp.ithome.com.tw/articles/10250988
 
-为了保持灵活，可以不设置Entrypoint，只设置CMD指向一个写好的shell脚本
+### 举例：构建一个灵活的Ubuntu
+
+构建一个灵活的Ubuntu，自带很简单的init system，可以灵活配置自己想要的东西。
 
 ```bash
 FROM ubuntu
-RUN apt update && apt install -y sudo curl vim && apt clean
+RUN apt update && apt install -y sudo curl nano && apt clean
 COPY start.sh /root
-CMD /root/start.sh
+ENTRYPOINT /root/start.sh
 ```
 
-之后如果需要修改
+start.sh (chmod+x)，里面只执行bash，容器启动后可以灵活添加自己的程序。
 
 ```bash
-# run一个新容器，直接覆盖CMD为bash
-docker run -it IMAGE bash
-# 修改start.sh
-echo xxx >> start.sh
-exit
-# 提交新镜像
-docker commit xxx
+#!/usr/bin/env bash
+cd /root/
+echo "Hello"
+# 在这里添加自己的程序
+# ...
+# 如果自己的程序意外停止，继续执行bash保持容器运行，方便修复环境等
+bash
 ```
 
-相反，为了防止错误被修改导致镜像不工作，可以设置Entrypoint固定启动运行的脚本。
+构建
 
-CMD和ENTRYPOINT区别  https://ithelp.ithome.com.tw/articles/10250988
+```bash
+docker build -t ubuntu-starter .
+```
+
+创建运行容器
+
+```bash
+docker run -it --name CONTAINER_NAME ubuntu-starter
+```
 
 
 
