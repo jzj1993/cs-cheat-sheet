@@ -76,6 +76,7 @@ docker pull ubuntu
 # 创建、首次启动容器，使用daemon模式。
 # 首次启动如果用start，任务结束会立即退出。
 # docker run = docker container run
+# docker run [OPTIONS] IMAGE [COMMAND] [ARG...]
 docker [container] run -itd --name CONTAINER_NAME IMAGE
 
 # 创建容器
@@ -101,15 +102,53 @@ docker attach CONTAINER
 
 
 
+## 批量操作
+
+```bash
+# 停止所有正在运行的container
+docker container stop $(docker ps -q)
+```
+
+
+
 ## 常用参数
 
 ```bash
-# restart
-# 设置成always,则docker启动时也会启动容器
+# restart参数
+# 设置成unless-stopped,则docker启动时也会启动容器,除非手动停止了
 # set when run
-docker run --restart=always IMAGE
+docker run --restart=unless-stopped IMAGE
 # or update existing container
-docker update --restart=always CONTAINER
+docker update --restart=unless-stopped CONTAINER
+
+# 端口绑定
+docker run -p <host_port1>:<container_port1> -p <host_port2>:<container_port2> IMAGE
+```
+
+
+
+## 修改参数
+
+一些参数只能在create和run中设置，不能update，例如端口绑定。之后如需修改有两个办法：
+
+重新创建
+
+```bash
+# 提交镜像
+docker commit xxx
+# 重新运行容器
+docker run xxx
+```
+
+改json文件
+
+```bash
+# 需要先停用docker
+service docker stop
+# 修改文件
+vim /var/lib/docker/containers/<id>/config.v2.json
+# 启动docker
+service docker start
 ```
 
 
@@ -160,8 +199,11 @@ RUN apt update \
 && apt install -y sudo vim curl \
 && apt clean
 
-ENTRYPOINT ["nginx", "-c"] # 定参
-CMD ["/etc/nginx/nginx.conf"] # 变参的默认值，可以在docker run时用 -c 传入覆盖
+# docker run [OPTIONS] IMAGE [COMMAND] [ARG...]
+# 实际运行的是 ENTRYPOINT CMD
+# ENTRYPOINT由Dockerfile指定，CMD可以传值覆盖Dockerfile指定的默认值
+ENTRYPOINT ["nginx", "-c"]
+CMD ["/etc/nginx/nginx.conf"]
 
 ENV NODE_VERSION 7.2.0 # 环境变量
 ```
@@ -172,6 +214,33 @@ ENV NODE_VERSION 7.2.0 # 环境变量
 # 最后一个参数`.`为上下文路径，也就是创建的目录
 docker build -t IMAGE_NAME .
 ```
+
+### 保持灵活性
+
+为了保持灵活，可以不设置Entrypoint，只设置CMD指向一个写好的shell脚本
+
+```bash
+FROM ubuntu
+RUN apt update && apt install -y sudo curl vim && apt clean
+COPY start.sh /root
+CMD /root/start.sh
+```
+
+之后如果需要修改
+
+```bash
+# run一个新容器，直接覆盖CMD为bash
+docker run -it IMAGE bash
+# 修改start.sh
+echo xxx >> start.sh
+exit
+# 提交新镜像
+docker commit xxx
+```
+
+相反，为了防止错误被修改导致镜像不工作，可以设置Entrypoint固定启动运行的脚本。
+
+CMD和ENTRYPOINT区别  https://ithelp.ithome.com.tw/articles/10250988
 
 
 

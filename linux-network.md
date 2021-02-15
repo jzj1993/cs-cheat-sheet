@@ -11,6 +11,12 @@ netstat -anp
 
 # 测试域名
 ping www.google.com
+
+# 监听指定端口并显示接收到的信息
+nc -l 8888
+
+# 测试指定端口能否连接(可以和 nc -l 连接)
+telnet localhost 8888
 ```
 
 
