@@ -122,6 +122,8 @@ docker ps
 docker ps -a
 # 只显示id
 docker ps -q
+# 显示运行容器，包括文件大小
+docker ps --size
 ```
 
 
@@ -132,6 +134,15 @@ docker container stop $(docker ps -q)
 
 # 更新所有容器
 docker update --restart=unless-stopped $(docker ps -q -a)
+```
+
+
+
+## system
+
+```bash
+# 查看docker占用磁盘空间
+docker system df
 ```
 
 
