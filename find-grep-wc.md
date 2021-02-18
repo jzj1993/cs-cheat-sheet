@@ -14,12 +14,14 @@ find path1 path2 ... [EXPRESSIONS]
 
 ```bash
 -name  # 指定名字，支持通配符
+-path  # 指定路径，支持通配符
 ```
 
 举例
 
 ```bash
 find . -name "*abc*"  # 搜索当前目录和子目录，找到路径包含abc的文件
+find . -name "*abc*" -path "*/diff/*" # 搜索带有diff的目录下名字包含abc的文件
 ```
 
 
