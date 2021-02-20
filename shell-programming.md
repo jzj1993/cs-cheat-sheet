@@ -35,3 +35,17 @@ fi
 
 
 https://linuxize.com/post/bash-check-if-file-exists/
+
+
+
+## Read Variable
+
+```bash
+DEFAULT_VALUE='Tom'
+echo "Enter your name [${DEFAULT_VALUE}]:"
+read name
+name=${name:-$DEFAULT_VALUE}
+echo "Your name is ${name}"
+```
+
+

@@ -20,6 +20,22 @@ sed -i.bak 's/pattern/replacement/g' filename
 
 
 
+MacOS上强制要求sed备份，否则会报错`undefined label`，解决如下
+
+```bash
+# 指定备份
+sed -i.bak 's/pattern/replacement/g' filename
+# or
+sed -i '.bak' 's/pattern/replacement/g' filename
+
+# 不备份
+sed -i '' 's/pattern/replacement/g' filename
+```
+
+参考 https://www.cnblogs.com/meitian/p/5907562.html
+
+
+
 实际案例
 
 ```bash
