@@ -20,6 +20,8 @@ vim
 ```bash
 du -sh              # 当前目录大小
 du -h --max-depth=1 # 当前一级目录大小
+du -sh --exclude PATTERN # 排除指定文件后的大小
+
 df -h               # 挂载磁盘占用率
 sudo fdisk -l       # 查看磁盘设备
 ```

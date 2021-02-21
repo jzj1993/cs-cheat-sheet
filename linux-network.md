@@ -27,6 +27,7 @@ telnet localhost 8888
 ## 修改网卡参数
 
 ```bash
+# OpenWRT
 # 修改网卡参数
 vim /etc/config/network
 # 重启网卡应用配置
