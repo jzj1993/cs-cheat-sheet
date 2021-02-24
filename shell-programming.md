@@ -126,6 +126,21 @@ echo `expr 10+10`    # 10+10
 
 
 
+## 获取当前脚本和目录路劲
+
+```bash
+__script=${BASH_SOURCE[0]}
+__dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+echo $__script
+echo $__dir
+```
+
+https://stackoverflow.com/questions/35006457/choosing-between-0-and-bash-source
+
+https://stackoverflow.com/questions/38978650/run-a-script-in-the-same-directory-as-the-current-script
+
+
+
 ## 判断文件是否存在
 
 ```bash
