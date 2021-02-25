@@ -30,3 +30,21 @@ tar cjf - src_dir |split -b 1024m - output.tar.bz2. # 打包，并拆分成多�
 cat logs.tar.bz2.a* | tar xj # 将打包拆分的文件解压
 ```
 
+
+
+## tar结合管道复制大量文件
+
+源文件主机上执行tar打包，通过管道传输数据到目标主机，再通过ssh调用目标主机的tar命令实时解包。
+
+根据文件、CPU、网络性能，可选是否开启tar压缩（参数z或j）节省数据量。
+
+命令如下，`SRC_DIR`是源文件目录，`DST_HOST`是目标主机IP或域名，`DST_DIR`是目标文件夹。
+
+```bash
+tar cf - SRC_DIR | ssh USER@DST_HOST "cd DST_DIR && tar xvf -"
+```
+
+https://serverfault.com/questions/18125/how-to-copy-a-large-number-of-files-quickly-between-two-servers
+https://serverfault.com/questions/208300/quickest-way-to-transfer-55gb-of-images-to-new-server
+https://unix.stackexchange.com/questions/10026/how-can-i-best-copy-large-numbers-of-small-files-over-scp
+
