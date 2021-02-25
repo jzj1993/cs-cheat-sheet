@@ -80,18 +80,5 @@ https://www.ruanyifeng.com/blog/2011/12/ssh_port_forwarding.html
 
 
 
-## scp：本机/远程之间复制文件
-
-```bash
-# 远程文件路径格式 user@host:path
-scp SRC_FILE DST_FILE
-```
-
-举例
-
-```bash
-scp ./LocalFile UserName@remote.host.com:/remote/path/
-```
-
 
 
