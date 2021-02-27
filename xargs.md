@@ -35,3 +35,17 @@ find . -name "*A*" | xargs grep B
 B1
 ```
 
+
+
+```bash
+# 创建测试文件
+mkdir test && cd test
+for i in {1..9}; echo $i-content > $i
+
+# 设置占位符
+ls | xargs -I {} echo {}
+
+# 执行多个命令
+ls | xargs -I {} bash -c "echo {} && cat {}"
+```
+
