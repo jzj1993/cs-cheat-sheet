@@ -180,7 +180,7 @@ COMMAND &
 
 # 忽略HUP信号，同时把COMMAND的stdout和stderr输出到nohup.out。
 # 如果设置了huponexit，shell结束时会发送SIGHUP，COMMAND会终止，使用nohup则忽略HUP信号。
-# 注意，nohup自身的output还是会输出。
+# 注意，nohup自身的output还是会输出到console。
 nohup COMMAND
 
 # 把stdout重定向到FILE
