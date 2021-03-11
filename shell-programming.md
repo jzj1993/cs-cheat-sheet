@@ -76,25 +76,22 @@ hello world
 ```bash
 function func() {
     # stdout输出的内容为function的返回值
-    echo "hello1"
-    echo "hello2"
-    # 如果需要正常echo输出，使用这种格式
-    echo "hello3" >&2
+    echo "result 1"
+    echo "result 2"
+    # 如果需要正常echo输出，可以输出到stderr
+    echo "message" >&2
     # return可以返回一个整数值(result code)，用$?获得
     return 5
 }
-A=`func` # or A=$(func)
-echo $?
-echo $A
+RESULT=`func` # or A=$(func)
+echo $?       # 获取前一个命令的result code
+echo $RESULT  # 输出result
 
 # 运行结果
-# echo from func
-hello3
-# $?: result code
+message
 5
-# A: return value
-hello1
-hello2
+result 1
+result 2
 ```
 
 
