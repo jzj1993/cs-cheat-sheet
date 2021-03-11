@@ -166,3 +166,92 @@ fi
 https://linuxize.com/post/bash-check-if-file-exists/
 
 
+
+## 后台运行与静默运行
+
+基础解释
+
+```bash
+# 前台运行。stdout和stderr都会输出到console。会阻塞后面的命令。
+COMMAND
+
+# 后台运行。stdout和stderr都会输出到console。不会阻塞后面的命令。
+COMMAND &
+
+# 忽略HUP信号，同时把COMMAND的stdout和stderr输出到nohup.out。
+# 如果设置了huponexit，shell结束时会发送SIGHUP，COMMAND会终止，使用nohup则忽略HUP信号。
+# 注意，nohup自身的output还是会输出。
+nohup COMMAND
+
+# 把stdout重定向到FILE
+COMMAND > FILE
+
+# 把stdout重定向到/dev/null，也就是忽略输出
+COMMAND > /dev/null
+
+# 把stderr重定向到stdout
+COMMAND 2>&1
+```
+
+实际案例
+
+```bash
+# 前台静默运行，阻塞后续命令
+COMMAND >/dev/null 2>&1
+
+# 后台运行，输出stdout和stderr到nohup.out
+nohup COMMAND &
+
+# 后台静默运行
+nohup COMMAND >/dev/null 2>&1 &
+```
+
+实验
+
+```bash
+$ mkdir test && cd test
+
+# 正常运行echo
+$ echo hello
+hello
+
+# 后台运行echo。stdout仍然会输出信息。且进程启动和结束时会有log显示。
+$ echo hello &
+[1] 9490
+hello
+[1]  + 9490 done       echo hello
+
+# 后台运行ls，随后前台运行echo。可以看到ls不会阻塞echo，hello提前被输出。
+$ ls / & \
+$ > echo hello
+[1] 9601
+hello
+bin   dev  home  lib    lib64   lost+found  mnt  proc  run   snap  sys  usr
+boot  etc  init  lib32  libx32  media       opt  root  sbin  srv   tmp  var
+[1]  + 9601 done       ls --color=tty /
+
+# nohup运行echo。默认会把stdout输出到nohup.out文件。
+$ nohup echo hello
+nohup: ignoring input and appending output to 'nohup.out'
+$ cat nohup.out
+hello
+
+# 运行cat并重定向stdout到out文件。stderr仍然输出到了console。
+$ cat non-existent-file > out
+cat: non-existent-file: No such file or directory
+
+# 运行cat并重定向stdout和stderr到out文件。stderr也被输出到了out文件。
+$ cat non-existent-file > out 2>&1
+# or: cat non-existent-file 1>out 2>out
+# or: cat non-existent-file >out 2>out
+$ cat out
+cat: non-existent-file: No such file or directory
+```
+
+
+
+https://stackoverflow.com/questions/15595374/whats-the-difference-between-nohup-and-ampersand
+
+https://stackoverflow.com/questions/818255/in-the-shell-what-does-21-mean
+
+https://unix.stackexchange.com/questions/4126/what-is-the-exact-difference-between-a-terminal-a-shell-a-tty-and-a-con
