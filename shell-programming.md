@@ -57,16 +57,20 @@ https://stackoverflow.com/questions/23157613/how-to-iterate-through-string-one-w
 
 ```bash
 function func() {
-	local ARG1=$1
-	local ARG2=$2
-	echo $ARG1 $ARG2
+	echo $1           # 1st arg
+	echo $2           # 2nd arg
+	echo ${@: 2: 2}   # from 2nd, length 2
+	echo ${@: 2}      # from 2nd to last
+	echo ${@: -2: 1}  # 2nd from end, length 1
 }
-func "hello" "world"
-func -f test
+func "arg1" "arg2" "arg3" "arg4"
 
 # 运行结果
-hello world
--f test
+arg1
+arg2
+arg2 arg3
+arg2 arg3 arg4
+arg3
 ```
 
 
@@ -141,6 +145,7 @@ https://stackoverflow.com/questions/38978650/run-a-script-in-the-same-directory-
 ## 判断文件是否存在
 
 ```bash
+# 注意-f判断的是文件，文件夹要用-d
 # exist
 if [ -f /etc/file ]; then
 	echo "File exists."
